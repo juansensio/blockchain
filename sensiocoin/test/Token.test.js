@@ -7,7 +7,7 @@ contract("Token", (accounts) => {
   it("Token has a name", async () => {
     const token = await Token.new();
     const name = await token.name();
-    assert.equal(name, "Sensio Coin");
+    assert.equal(name, "SensioCoin");
   });
   it("Token has a symbol", async () => {
     const token = await Token.new();

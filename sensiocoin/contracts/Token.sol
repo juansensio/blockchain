@@ -2,7 +2,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 contract Token {
-    string  public name = "Sensio Coin";
+    string  public name = "SensioCoin";
     string  public symbol = "SENC";
     uint256 public totalSupply = 1000000000000000000000000; // 1 million sensio coins
     uint8 public decimals = 18;
