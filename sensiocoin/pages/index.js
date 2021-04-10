@@ -66,17 +66,16 @@ export default function Home() {
   const sellTokens = async (amount) => {
     const web3 = window.web3;
     const value = web3.utils.toWei(amount.toString(), "Ether");
-    console.log(state.ethSwap.address);
-    // state.token.methods
-    //   .approve(state.ethSwap.address, value)
-    //   .send({
-    //     from: state.account,
-    //   })
-    //   .on("transactionHash", async (hash) => {
-    //     state.ethSwap.methods.sellTokens(value).send({
-    //       from: state.account,
-    //     });
-    //   });
+    state.token.methods
+      .approve(state.ethSwap._address, value)
+      .send({
+        from: state.account,
+      })
+      .on("transactionHash", async (hash) => {
+        state.ethSwap.methods.sellTokens(value).send({
+          from: state.account,
+        });
+      });
   };
 
   const { account, balance, tokenBalance } = state;
