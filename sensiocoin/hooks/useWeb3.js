@@ -26,7 +26,46 @@ export function useProvideWeb3() {
     }
   }, []);
 
-  return state;
+  const buyTokens = async (account, value) => {
+    value = web3.utils.toWei(value.toString(), "Ether");
+    state.ethSwap.methods.buyTokens().send({
+      from: account,
+      value,
+    });
+    // .on("transactionHash", async (hash) => {
+    //   console.log("ei");
+    //   const balance = await web3.eth.getBalance(state.account);
+    //   const tokenBalance = await state.token.methods
+    //     .balanceOf(state.account)
+    //     .call();
+    //   console.log(tokenBalance);
+    //   setState({
+    //     ...state,
+    //     balance: web3.utils.fromWei(balance, "Ether"),
+    //     tokenBalance: web3.utils.fromWei(tokenBalance, "Ether"),
+    //   });
+    // });
+  };
+
+  const sellTokens = async (account, amount) => {
+    const value = web3.utils.toWei(amount.toString(), "Ether");
+    state.token.methods
+      .approve(state.ethSwap._address, value)
+      .send({
+        from: account,
+      })
+      .on("transactionHash", async (hash) => {
+        state.ethSwap.methods.sellTokens(value).send({
+          from: account,
+        });
+      });
+  };
+
+  return {
+    ...state,
+    buyTokens,
+    sellTokens,
+  };
 }
 
 const web3Context = createContext();

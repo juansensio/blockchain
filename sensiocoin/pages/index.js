@@ -17,87 +17,67 @@ import {
   NumberDecrementStepper,
   Button,
   Box,
+  Grid,
+  ButtonGroup,
 } from "@chakra-ui/react";
+import { useRef } from "react";
 
 export default function Home() {
-  const { web3, token, ethSwap } = useWeb3();
-  console.log(web3, token, ethSwap);
-
+  const { buyTokens, sellTokens } = useWeb3();
   const { account, ethBalance, tokenBalance } = useAccount();
-  console.log(account, ethBalance, tokenBalance);
+  const ref = useRef();
 
-  const buyTokens = async (e) => {
+  function _buyTokens(e) {
     e.preventDefault();
-    //   const web3 = window.web3;
-    //   const value = web3.utils.toWei(ethAmount.toString(), "Ether");
-    //   state.ethSwap.methods.buyTokens().send({
-    //     from: state.account,
-    //     value,
-    //   });
-    //   // .on("transactionHash", async (hash) => {
-    //   //   console.log("ei");
-    //   //   const balance = await web3.eth.getBalance(state.account);
-    //   //   const tokenBalance = await state.token.methods
-    //   //     .balanceOf(state.account)
-    //   //     .call();
-    //   //   console.log(tokenBalance);
-    //   //   setState({
-    //   //     ...state,
-    //   //     balance: web3.utils.fromWei(balance, "Ether"),
-    //   //     tokenBalance: web3.utils.fromWei(tokenBalance, "Ether"),
-    //   //   });
-    //   // });
-  };
+    const value = ref.current.value;
+    if (value) buyTokens(account, value / 100);
+  }
 
-  // const sellTokens = async (amount) => {
-  //   const web3 = window.web3;
-  //   const value = web3.utils.toWei(amount.toString(), "Ether");
-  //   state.token.methods
-  //     .approve(state.ethSwap._address, value)
-  //     .send({
-  //       from: state.account,
-  //     })
-  //     .on("transactionHash", async (hash) => {
-  //       state.ethSwap.methods.sellTokens(value).send({
-  //         from: state.account,
-  //       });
-  //     });
-  // };
+  function _sellTokens() {
+    const value = ref.current.value;
+    if (value) sellTokens(account, value);
+  }
 
   return (
-    <VStack>
+    <VStack maxW="6xl" p={6} margin="0 auto">
       <Heading>Sensio Exchange</Heading>
       <Text>Consigue aquí tus SensioCoins</Text>
-      <Alert status={account ? "success" : "error"}>
-        <AlertIcon />
-        <AlertTitle mr={2}>Cuenta</AlertTitle>
-        <AlertDescription>
-          {account ? account : "Conecta tu cuenta"}
-        </AlertDescription>
-      </Alert>
-      <Box as="form" onSubmit={buyTokens}>
-        <FormControl id="amount">
-          <FormLabel>Cantidad</FormLabel>
-          <FormLabel fontSize="10px" color="gray.500">
-            100 SENC = 1 ETH
-          </FormLabel>
-          <NumberInput max={100} min={1}>
-            <NumberInputField placeholder={1} />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-          <Button mt={4} type="submit" variant="outline">
-            Comprar
-          </Button>
-        </FormControl>
-      </Box>
-      {/* <p>Cuenta: {account}</p>
-      <p>ETH Balance: {balance}</p>
-      <p>SENC Balance: {tokenBalance}</p>
-      <button onClick={() => buyTokens(1)}>COMPRA</button>
-      <button onClick={() => sellTokens(100)}>VENDE</button> */}
+      <Grid templateColumns="1fr 1fr" gap="30px">
+        <VStack w="full" align="left">
+          <Alert status={account ? "success" : "error"} fontSize="10px">
+            <AlertIcon />
+            <AlertTitle mr={2}>Cuenta</AlertTitle>
+            <AlertDescription>
+              {account ? account : "Conecta tu cuenta"}
+            </AlertDescription>
+          </Alert>
+          <Text>Tus ETH: {ethBalance}</Text>
+          <Text>Tus SENC: {tokenBalance}</Text>
+        </VStack>
+        <Box as="form" onSubmit={_buyTokens}>
+          <FormControl id="amount">
+            <FormLabel>Cantidad</FormLabel>
+            <FormLabel fontSize="10px" color="gray.500">
+              100 SENC = 1 ETH
+            </FormLabel>
+            <NumberInput min={0}>
+              <NumberInputField placeholder={1} ref={ref} />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+            <ButtonGroup w="full" spacing={6} alignSelf="flex-end">
+              <Button mt={4} type="submit" variant="outline">
+                Comprar
+              </Button>
+              <Button mt={4} onClick={_sellTokens} variant="link">
+                Vender
+              </Button>
+            </ButtonGroup>
+          </FormControl>
+        </Box>
+      </Grid>
     </VStack>
   );
 }
